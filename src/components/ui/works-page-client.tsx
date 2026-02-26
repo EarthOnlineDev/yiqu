@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 interface WorkPreviewItem {
   readonly id: string;
@@ -16,12 +16,24 @@ interface WorksPageClientProps {
 
 export function WorksPageClient({ works }: WorksPageClientProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [displayIndex, setDisplayIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const handleHover = (index: number) => {
-    if (index !== activeIndex) {
+  const handleHover = useCallback(
+    (index: number) => {
+      if (index === activeIndex || isTransitioning) return;
       setActiveIndex(index);
-    }
-  };
+      setIsTransitioning(true);
+      // Fade out, swap image, fade in
+      setTimeout(() => {
+        setDisplayIndex(index);
+        requestAnimationFrame(() => {
+          setIsTransitioning(false);
+        });
+      }, 180);
+    },
+    [activeIndex, isTransitioning]
+  );
 
   return (
     <div
@@ -124,7 +136,7 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
         </div>
       </aside>
 
-      {/* Right: clickable preview image */}
+      {/* Right: clickable preview image with crossfade */}
       <main
         style={{
           height: "100%",
@@ -132,8 +144,10 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          position: "relative",
         }}
       >
+        {/* Crossfade wrapper — opacity transitions mask the image swap */}
         <Link
           href={`/works/${works[activeIndex].id}`}
           style={{
@@ -142,12 +156,14 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
             justifyContent: "center",
             width: "100%",
             height: "100%",
+            opacity: isTransitioning ? 0 : 1,
+            transition: "opacity 250ms ease",
           }}
         >
           <Image
-            key={works[activeIndex].firstImageSrc}
-            src={works[activeIndex].firstImageSrc}
-            alt={works[activeIndex].titleTC}
+            key={works[displayIndex].firstImageSrc}
+            src={works[displayIndex].firstImageSrc}
+            alt={works[displayIndex].titleTC}
             width={0}
             height={0}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 900px"
@@ -163,6 +179,22 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
             priority
           />
         </Link>
+
+        {/* Preload all work images for instant hover switching */}
+        {works.map((work, index) => (
+          index !== displayIndex && (
+            <Image
+              key={`preload-${work.id}`}
+              src={work.firstImageSrc}
+              alt=""
+              width={0}
+              height={0}
+              sizes="1px"
+              style={{ position: "absolute", width: 0, height: 0, opacity: 0, pointerEvents: "none" }}
+              aria-hidden
+            />
+          )
+        ))}
       </main>
     </div>
   );

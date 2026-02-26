@@ -16,6 +16,7 @@ interface ImageCarouselProps {
 export function ImageCarousel({ images, alt }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [initialLoaded, setInitialLoaded] = useState(false);
   const [hoverSide, setHoverSide] = useState<"left" | "right" | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
@@ -88,6 +89,16 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
       ? "w-resize"
       : "e-resize";
 
+  // Handle first image load for gentle fade-in
+  const handleImageLoad = useCallback(() => {
+    if (!initialLoaded) {
+      requestAnimationFrame(() => setInitialLoaded(true));
+    }
+  }, [initialLoaded]);
+
+  // Compute image opacity: initial fade-in + navigation dip
+  const imageOpacity = !initialLoaded ? 0 : isTransitioning ? 0.6 : 1;
+
   return (
     <div
       ref={containerRef}
@@ -107,7 +118,7 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
         minHeight: 0,
       }}
     >
-      {/* Current image with transition on navigation */}
+      {/* Current image */}
       <Image
         key={images[currentIndex].src}
         src={images[currentIndex].src}
@@ -122,10 +133,11 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
           maxHeight: "100%",
           objectFit: "contain",
           display: "block",
-          opacity: isTransitioning ? 0.6 : 1,
+          opacity: imageOpacity,
           transition: "opacity 300ms ease",
         }}
         priority
+        onLoad={handleImageLoad}
       />
 
       {/* Counter */}
@@ -140,23 +152,38 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
             color: "var(--text-tertiary)",
             letterSpacing: "0.1em",
             userSelect: "none",
+            opacity: initialLoaded ? 1 : 0,
+            transition: "opacity 300ms ease",
           }}
         >
           {currentIndex + 1} / {total}
         </span>
       )}
 
-      {/* Preload next image (hidden) */}
+      {/* Preload next + prev images (hidden) */}
       {hasMultiple && (
-        <Image
-          src={images[(currentIndex + 1) % total].src}
-          alt=""
-          width={0}
-          height={0}
-          sizes="1px"
-          style={{ position: "absolute", width: 0, height: 0, opacity: 0 }}
-          aria-hidden
-        />
+        <>
+          <Image
+            src={images[(currentIndex + 1) % total].src}
+            alt=""
+            width={0}
+            height={0}
+            sizes="1px"
+            style={{ position: "absolute", width: 0, height: 0, opacity: 0 }}
+            aria-hidden
+          />
+          {total > 2 && (
+            <Image
+              src={images[(currentIndex - 1 + total) % total].src}
+              alt=""
+              width={0}
+              height={0}
+              sizes="1px"
+              style={{ position: "absolute", width: 0, height: 0, opacity: 0 }}
+              aria-hidden
+            />
+          )}
+        </>
       )}
     </div>
   );

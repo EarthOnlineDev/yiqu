@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllWorks, getWorkById, s2t } from "@/lib/works";
-import { SidebarLayout } from "@/components/layout/sidebar-layout";
+import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 import { WorkDetailAside } from "@/components/ui/work-detail-aside";
+import { WorkTopNav } from "@/components/ui/work-top-nav";
 
 interface PageProps {
   readonly params: Promise<{ id: string }>;
@@ -47,14 +48,23 @@ export default async function WorkDetailPage({ params }: PageProps) {
       titleTC={s2t(work.title)}
       seriesTC={work.series ? s2t(work.series) : undefined}
       descriptionTC={s2t(work.description)}
-      prevWork={prevWork}
-      nextWork={nextWork}
     />
   );
 
   return (
-    <SidebarLayout currentPath="/works" asideExtra={asideContent} hideMainNav>
-      <ImageCarousel images={work.images} alt={s2t(work.title)} />
-    </SidebarLayout>
+    <div style={{ height: "100vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+      {/* Top navigation — outside content area */}
+      <WorkTopNav prevWork={prevWork} nextWork={nextWork} />
+
+      {/* Content: sidebar (brand + metadata) + carousel */}
+      <div className="work-detail-grid">
+        <aside className="sidebar-aside">
+          <SidebarNav currentPath="/works" asideExtra={asideContent} hideMainNav />
+        </aside>
+        <main style={{ height: "100%", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+          <ImageCarousel images={work.images} alt={s2t(work.title)} />
+        </main>
+      </div>
+    </div>
   );
 }

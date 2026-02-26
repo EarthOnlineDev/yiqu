@@ -114,7 +114,7 @@ export function SidebarNav({ currentPath, asideExtra, hideMainNav }: SidebarNavP
 
       {/* Optional extra content (e.g., work metadata on detail pages) */}
       {asideExtra && (
-        <div style={{ flex: 1, overflow: "hidden", minHeight: 0 }}>
+        <div style={{ flex: 1, minHeight: 0 }}>
           {asideExtra}
         </div>
       )}

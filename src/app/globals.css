@@ -98,6 +98,7 @@ img {
   overflow: hidden;
   display: grid;
   grid-template-columns: 280px 1fr;
+  grid-template-rows: 1fr; /* Constrain row height so absolute-positioned content works */
   gap: var(--space-20);
   padding: var(--space-20);
   max-width: 1400px;

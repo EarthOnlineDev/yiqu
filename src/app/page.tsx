@@ -1,61 +1,31 @@
-import { ColorPalette } from "@/components/style-guide/color-palette";
-import { TypographyShowcase } from "@/components/style-guide/typography-showcase";
-import { SpacingScale } from "@/components/style-guide/spacing-scale";
-import { NavigationDemo } from "@/components/style-guide/navigation-demo";
-import { PhotoCardDemo } from "@/components/style-guide/photo-card-demo";
-import { JournalListDemo } from "@/components/style-guide/journal-list-demo";
-import { JournalDetailDemo } from "@/components/style-guide/journal-detail-demo";
-import { HomepageDemo } from "@/components/style-guide/homepage-demo";
-import { InteractionDemo } from "@/components/style-guide/interaction-demo";
+import { getAllWorks, s2t } from "@/lib/works";
+import { SidebarLayout } from "@/components/layout/sidebar-layout";
+import { WorkImage } from "@/components/ui/work-image";
 
-export default function StyleGuidePage() {
+export default function HomePage() {
+  const works = getAllWorks();
+  // 沉醉在无边的灰白 — atmospheric grey-white landscape, most editorial
+  const heroWork = works[8];
+  const heroImage = heroWork?.images[0];
+
+  if (!heroImage) return null;
+
   return (
-    <main>
-      {/* Hero: Homepage Layout Preview */}
-      <HomepageDemo />
-
-      {/* Style Guide Sections */}
+    <SidebarLayout currentPath="/">
       <div
         style={{
-          maxWidth: 1200,
-          margin: "0 auto",
-          padding: "var(--space-20) var(--space-10)",
+          height: "calc(100vh - var(--space-20) * 2)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <header style={{ marginBottom: "var(--space-16)" }}>
-          <p
-            style={{
-              fontFamily: "var(--font-cormorant), Georgia, serif",
-              fontSize: "var(--text-sm)",
-              color: "var(--text-tertiary)",
-              letterSpacing: "0.05em",
-              marginBottom: "var(--space-3)",
-            }}
-          >
-            design style guide
-          </p>
-          <h2
-            style={{
-              fontFamily: "var(--font-cormorant), Georgia, serif",
-              fontSize: "var(--text-2xl)",
-              fontWeight: 400,
-              color: "var(--text-primary)",
-              lineHeight: 1.3,
-            }}
-          >
-            Visual Language Reference
-          </h2>
-        </header>
-
-        <ColorPalette />
-        <TypographyShowcase />
-        <SpacingScale />
-        <NavigationDemo />
-        <InteractionDemo />
-        <PhotoCardDemo />
-        <JournalListDemo />
-        <JournalDetailDemo />
+        <WorkImage
+          src={heroImage.src}
+          alt={s2t(heroWork.title)}
+          priority
+        />
       </div>
-    </main>
+    </SidebarLayout>
   );
 }

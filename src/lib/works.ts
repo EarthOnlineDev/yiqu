@@ -25,6 +25,10 @@ export function getAllWorks(): readonly Work[] {
   return worksData as readonly Work[];
 }
 
+export function getWorkById(id: string): Work | undefined {
+  return (worksData as readonly Work[]).find((w) => w.id === id);
+}
+
 export function getWorkByIndex(index: number): Work | undefined {
   return worksData[index] as Work | undefined;
 }

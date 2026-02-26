@@ -100,3 +100,47 @@ img {
   max-width: 100%;
   height: auto;
 }
+
+/* ==========================================
+   Sidebar Layout — Responsive
+   ========================================== */
+
+.sidebar-layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-20);
+  padding: var(--space-20);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.mobile-nav {
+  display: none !important;
+}
+
+/* Tablet */
+@media (max-width: 1023px) {
+  .sidebar-layout {
+    grid-template-columns: 200px 1fr;
+    gap: var(--space-10);
+    padding: var(--space-10);
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .sidebar-layout {
+    grid-template-columns: 1fr;
+    padding: var(--space-6);
+    padding-top: calc(var(--space-16) + var(--space-4));
+  }
+
+  .sidebar-aside {
+    display: none;
+  }
+
+  .mobile-nav {
+    display: flex !important;
+  }
+}

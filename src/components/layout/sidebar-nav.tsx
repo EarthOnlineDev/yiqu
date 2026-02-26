@@ -6,6 +6,7 @@ import { useState, type ReactNode } from "react";
 interface SidebarNavProps {
   readonly currentPath: string;
   readonly asideExtra?: ReactNode;
+  readonly hideMainNav?: boolean;
 }
 
 const navItems = [
@@ -49,7 +50,7 @@ function NavLink({
   );
 }
 
-export function SidebarNav({ currentPath, asideExtra }: SidebarNavProps) {
+export function SidebarNav({ currentPath, asideExtra, hideMainNav }: SidebarNavProps) {
   return (
     <div
       style={{
@@ -91,23 +92,25 @@ export function SidebarNav({ currentPath, asideExtra }: SidebarNavProps) {
         </p>
       </Link>
 
-      {/* Navigation */}
-      <nav
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "var(--space-5)",
-        }}
-      >
-        {navItems.map((item) => (
-          <NavLink
-            key={item.href}
-            href={item.href}
-            label={item.label}
-            active={currentPath.startsWith(item.href)}
-          />
-        ))}
-      </nav>
+      {/* Navigation — hidden on immersive pages (e.g. work detail) */}
+      {!hideMainNav && (
+        <nav
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "var(--space-5)",
+          }}
+        >
+          {navItems.map((item) => (
+            <NavLink
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              active={currentPath.startsWith(item.href)}
+            />
+          ))}
+        </nav>
+      )}
 
       {/* Optional extra content (e.g., work metadata on detail pages) */}
       {asideExtra && (

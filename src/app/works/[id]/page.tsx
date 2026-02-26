@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllWorks, getWorkById, s2t } from "@/lib/works";
-import { WorkDetailClient } from "@/components/ui/work-detail-client";
+import { SidebarLayout } from "@/components/layout/sidebar-layout";
+import { ImageCarousel } from "@/components/ui/image-carousel";
+import { WorkDetailAside } from "@/components/ui/work-detail-aside";
 
 interface PageProps {
   readonly params: Promise<{ id: string }>;
@@ -40,14 +42,19 @@ export default async function WorkDetailPage({ params }: PageProps) {
       ? { id: works[currentIndex + 1].id, titleTC: s2t(works[currentIndex + 1].title) }
       : null;
 
-  return (
-    <WorkDetailClient
+  const asideContent = (
+    <WorkDetailAside
       titleTC={s2t(work.title)}
       seriesTC={work.series ? s2t(work.series) : undefined}
       descriptionTC={s2t(work.description)}
-      images={work.images}
       prevWork={prevWork}
       nextWork={nextWork}
     />
+  );
+
+  return (
+    <SidebarLayout currentPath="/works" asideExtra={asideContent} hideMainNav>
+      <ImageCarousel images={work.images} alt={s2t(work.title)} />
+    </SidebarLayout>
   );
 }

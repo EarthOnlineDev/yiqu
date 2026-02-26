@@ -16,7 +16,6 @@ interface ImageCarouselProps {
 export function ImageCarousel({ images, alt }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [loaded, setLoaded] = useState(false);
   const [hoverSide, setHoverSide] = useState<"left" | "right" | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
@@ -28,7 +27,6 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
     (index: number) => {
       if (isTransitioning || !hasMultiple) return;
       setIsTransitioning(true);
-      setLoaded(false); // Reset load state for new image
       setCurrentIndex(((index % total) + total) % total);
       setTimeout(() => setIsTransitioning(false), 300);
     },
@@ -107,10 +105,9 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
         cursor: cursorStyle,
         overflow: "hidden",
         minHeight: 0,
-        backgroundColor: "var(--bg-image)",
       }}
     >
-      {/* Current image with onLoad fade-in */}
+      {/* Current image with transition on navigation */}
       <Image
         key={images[currentIndex].src}
         src={images[currentIndex].src}
@@ -125,11 +122,10 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
           maxHeight: "100%",
           objectFit: "contain",
           display: "block",
-          opacity: loaded ? 1 : 0,
-          transition: "opacity 600ms ease-out",
+          opacity: isTransitioning ? 0.6 : 1,
+          transition: "opacity 300ms ease",
         }}
         priority
-        onLoad={() => setLoaded(true)}
       />
 
       {/* Counter */}
@@ -144,8 +140,6 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
             color: "var(--text-tertiary)",
             letterSpacing: "0.1em",
             userSelect: "none",
-            opacity: loaded ? 1 : 0,
-            transition: "opacity 600ms ease-out",
           }}
         >
           {currentIndex + 1} / {total}

@@ -16,11 +16,9 @@ interface WorksPageClientProps {
 
 export function WorksPageClient({ works }: WorksPageClientProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [imageLoaded, setImageLoaded] = useState(true); // first image has priority
 
   const handleHover = (index: number) => {
     if (index !== activeIndex) {
-      setImageLoaded(false);
       setActiveIndex(index);
     }
   };
@@ -126,7 +124,7 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
         </div>
       </aside>
 
-      {/* Right: clickable preview image with onLoad fade-in */}
+      {/* Right: clickable preview image */}
       <main
         style={{
           height: "100%",
@@ -134,7 +132,6 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "var(--bg-image)",
         }}
       >
         <Link
@@ -162,11 +159,8 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
               objectFit: "contain",
               display: "block",
               cursor: "pointer",
-              opacity: imageLoaded ? 1 : 0,
-              transition: "opacity 500ms ease-out",
             }}
             priority
-            onLoad={() => setImageLoaded(true)}
           />
         </Link>
       </main>

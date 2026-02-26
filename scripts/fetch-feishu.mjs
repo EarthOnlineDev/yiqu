@@ -97,6 +97,8 @@ async function main() {
     const title = fields["作品标题"];
     const description = fields["作品描述"];
     const series = fields["系列名"];
+    const publishDate = fields["发布时间"];
+    const location = fields["发布地点"];
     const attachments = fields["作品图片"];
 
     console.log(`\nProcessing: ${title}`);
@@ -137,6 +139,8 @@ async function main() {
             : String(description)
         : "",
       series: series || "",
+      publishDate: publishDate || "",
+      location: location || "",
       images,
     });
   }

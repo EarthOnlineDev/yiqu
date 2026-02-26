@@ -46,12 +46,16 @@ export default async function WorkDetailPage({ params }: PageProps) {
   const titleTC = s2t(work.title);
   const seriesTC = work.series ? s2t(work.series) : undefined;
   const descriptionTC = s2t(work.description);
+  const locationTC = work.location ? s2t(work.location) : undefined;
+  const publishDate = work.publishDate || undefined;
 
   const asideContent = (
     <WorkDetailAside
       titleTC={titleTC}
       seriesTC={seriesTC}
       descriptionTC={descriptionTC}
+      publishDate={publishDate}
+      locationTC={locationTC}
     />
   );
 
@@ -84,6 +88,19 @@ export default async function WorkDetailPage({ params }: PageProps) {
             }}
           >
             {seriesTC}
+          </p>
+        )}
+        {(publishDate || locationTC) && (
+          <p
+            style={{
+              fontFamily: "var(--font-cormorant), Georgia, serif",
+              fontSize: "var(--text-xs)",
+              color: "var(--text-tertiary)",
+              letterSpacing: "0.02em",
+              marginTop: "var(--space-2)",
+            }}
+          >
+            {[publishDate, locationTC].filter(Boolean).join("  ·  ")}
           </p>
         )}
       </div>

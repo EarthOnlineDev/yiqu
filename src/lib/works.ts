@@ -11,6 +11,8 @@ export interface Work {
   readonly title: string;
   readonly description: string;
   readonly series: string;
+  readonly publishDate?: string;
+  readonly location?: string;
   readonly images: readonly WorkImage[];
 }
 

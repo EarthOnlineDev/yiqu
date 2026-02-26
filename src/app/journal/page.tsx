@@ -35,13 +35,16 @@ export default function JournalPage() {
             key={work.id}
             href={`/journal/${work.id}`}
             style={{
-              display: "block",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "baseline",
               padding: "var(--space-3) 0",
               borderBottom:
                 i < works.length - 1
                   ? "1px solid var(--border)"
                   : "none",
               textDecoration: "none",
+              gap: "var(--space-4)",
             }}
           >
             <span
@@ -55,6 +58,19 @@ export default function JournalPage() {
             >
               {s2t(work.title)}
             </span>
+            {work.publishDate && (
+              <span
+                style={{
+                  fontFamily: "var(--font-cormorant), Georgia, serif",
+                  fontSize: "var(--text-xs)",
+                  color: "var(--text-tertiary)",
+                  letterSpacing: "0.02em",
+                  flexShrink: 0,
+                }}
+              >
+                {work.publishDate}
+              </span>
+            )}
           </Link>
         ))}
       </div>

@@ -30,10 +30,17 @@ export default async function JournalDetailPage({ params }: PageProps) {
 
   const blocks = prepareJournalBlocks(work);
   const titleTC = s2t(work.title);
+  const publishDate = work.publishDate || undefined;
+  const locationTC = work.location ? s2t(work.location) : undefined;
 
   return (
     <SidebarLayout currentPath="/journal">
-      <JournalPaginated title={titleTC} blocks={blocks} />
+      <JournalPaginated
+        title={titleTC}
+        blocks={blocks}
+        publishDate={publishDate}
+        locationTC={locationTC}
+      />
     </SidebarLayout>
   );
 }

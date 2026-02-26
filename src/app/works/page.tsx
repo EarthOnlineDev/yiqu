@@ -13,6 +13,7 @@ export default function WorksPage() {
     id: work.id,
     titleTC: s2t(work.title),
     firstImageSrc: work.images[0].src,
+    allImageSrcs: work.images.map((img) => img.src),
   }));
 
   return <WorksPageClient works={worksForPreview} />;

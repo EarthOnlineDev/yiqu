@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 interface WorkPreviewItem {
   readonly id: string;
   readonly titleTC: string;
   readonly firstImageSrc: string;
+  readonly allImageSrcs: readonly string[];
 }
 
 interface WorksPageClientProps {
@@ -25,6 +26,21 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
     },
     [displayIndex]
   );
+
+  // Preload all work detail images in the background
+  // so they're cached when user clicks into a work
+  useEffect(() => {
+    // Delay preloading slightly to not compete with initial page render
+    const timer = setTimeout(() => {
+      works.forEach((work) => {
+        work.allImageSrcs.forEach((src) => {
+          const img = new window.Image();
+          img.src = src;
+        });
+      });
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [works]);
 
   return (
     <>

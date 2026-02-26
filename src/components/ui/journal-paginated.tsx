@@ -12,9 +12,11 @@ interface ContentBlock {
 interface JournalPaginatedProps {
   readonly title: string;
   readonly blocks: readonly ContentBlock[];
+  readonly publishDate?: string;
+  readonly locationTC?: string;
 }
 
-export function JournalPaginated({ title, blocks }: JournalPaginatedProps) {
+export function JournalPaginated({ title, blocks, publishDate, locationTC }: JournalPaginatedProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [hoverSide, setHoverSide] = useState<"left" | "right" | null>(null);
@@ -116,21 +118,34 @@ export function JournalPaginated({ title, blocks }: JournalPaginatedProps) {
         transition: "opacity 300ms ease",
       }}
     >
-      {/* Title on first page */}
+      {/* Title + metadata on first page */}
       {currentPage === 0 && (
-        <h1
-          style={{
-            fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
-            fontSize: "var(--text-xl)",
-            fontWeight: 400,
-            color: "var(--text-primary)",
-            lineHeight: 1.6,
-            marginBottom: "var(--space-6)",
-            flexShrink: 0,
-          }}
-        >
-          {title}
-        </h1>
+        <div style={{ flexShrink: 0, marginBottom: "var(--space-6)" }}>
+          <h1
+            style={{
+              fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
+              fontSize: "var(--text-xl)",
+              fontWeight: 400,
+              color: "var(--text-primary)",
+              lineHeight: 1.6,
+            }}
+          >
+            {title}
+          </h1>
+          {(publishDate || locationTC) && (
+            <p
+              style={{
+                fontFamily: "var(--font-cormorant), Georgia, serif",
+                fontSize: "var(--text-xs)",
+                color: "var(--text-tertiary)",
+                letterSpacing: "0.02em",
+                marginTop: "var(--space-2)",
+              }}
+            >
+              {[publishDate, locationTC].filter(Boolean).join("  ·  ")}
+            </p>
+          )}
+        </div>
       )}
 
       {/* Content area */}

@@ -2,13 +2,19 @@ interface WorkDetailAsideProps {
   readonly titleTC: string;
   readonly seriesTC?: string;
   readonly descriptionTC: string;
+  readonly publishDate?: string;
+  readonly locationTC?: string;
 }
 
 export function WorkDetailAside({
   titleTC,
   seriesTC,
   descriptionTC,
+  publishDate,
+  locationTC,
 }: WorkDetailAsideProps) {
+  const hasMeta = !!(publishDate || locationTC);
+
   return (
     <div
       style={{
@@ -45,6 +51,21 @@ export function WorkDetailAside({
             }}
           >
             {seriesTC}
+          </p>
+        )}
+
+        {/* Date + Location — subtle metadata line */}
+        {hasMeta && (
+          <p
+            style={{
+              fontFamily: "var(--font-cormorant), Georgia, serif",
+              fontSize: "var(--text-xs)",
+              color: "var(--text-tertiary)",
+              letterSpacing: "0.02em",
+              marginTop: "var(--space-2)",
+            }}
+          >
+            {[publishDate, locationTC].filter(Boolean).join("  ·  ")}
           </p>
         )}
       </div>

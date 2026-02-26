@@ -133,7 +133,7 @@ export function SidebarNav({ currentPath, asideExtra, hideMainNav }: SidebarNavP
           flexShrink: 0,
         }}
       >
-        &copy; 2025 YIQU
+        &copy; 2026 YIQU
       </p>
     </div>
   );

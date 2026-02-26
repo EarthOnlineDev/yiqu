@@ -15,7 +15,7 @@ export default function JournalPage() {
       <div
         style={{
           paddingTop: "var(--space-10)",
-          overflow: "hidden",
+          overflow: "auto",
         }}
       >
         <p

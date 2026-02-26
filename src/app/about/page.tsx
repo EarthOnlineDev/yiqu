@@ -14,6 +14,7 @@ export default function AboutPage() {
   return (
     <SidebarLayout currentPath="/about">
       <div
+        className="about-content-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",

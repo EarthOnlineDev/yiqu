@@ -60,10 +60,12 @@
   --font-serif-tc: var(--font-noto-serif-tc);
 }
 
-/* Global Styles — Zero Scroll */
-html, body {
-  height: 100vh;
-  overflow: hidden;
+/* Global Styles — Zero Scroll on desktop only */
+@media (min-width: 768px) {
+  html, body {
+    height: 100vh;
+    overflow: hidden;
+  }
 }
 
 body {
@@ -118,6 +120,9 @@ img {
 /* Mobile */
 @media (max-width: 767px) {
   .sidebar-layout {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
     grid-template-columns: 1fr;
     padding: var(--space-6);
     padding-top: calc(var(--space-16) + var(--space-4));
@@ -135,6 +140,13 @@ img {
 /* ==========================================
    Work Detail Layout
    ========================================== */
+
+.work-detail-wrapper {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
 
 .work-top-nav {
   display: flex;
@@ -160,6 +172,11 @@ img {
   min-height: 0;
 }
 
+/* Mobile-only content for work detail */
+.work-detail-mobile-meta {
+  display: none;
+}
+
 /* Tablet */
 @media (max-width: 1023px) {
   .work-top-nav {
@@ -175,16 +192,72 @@ img {
 
 /* Mobile */
 @media (max-width: 767px) {
+  .work-detail-wrapper {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+    padding-top: calc(var(--space-16) + var(--space-4));
+  }
+
   .work-top-nav {
-    padding: var(--space-4) var(--space-6);
+    padding: var(--space-3) var(--space-6);
   }
 
   .work-detail-grid {
     grid-template-columns: 1fr;
-    padding: 0 var(--space-6) var(--space-6);
+    padding: 0;
   }
 
   .work-detail-grid .sidebar-aside {
     display: none;
+  }
+
+  .work-detail-mobile-meta {
+    display: block;
+    padding: 0 var(--space-6) var(--space-4);
+  }
+
+  /* Carousel takes natural height on mobile */
+  .work-detail-grid main {
+    height: auto !important;
+    min-height: 50vh;
+  }
+}
+
+/* ==========================================
+   Works List — Desktop + Mobile
+   ========================================== */
+
+.works-mobile-list {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .works-desktop {
+    display: none !important;
+  }
+
+  .works-mobile-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    padding: calc(var(--space-16) + var(--space-4)) var(--space-6) var(--space-6);
+  }
+}
+
+/* ==========================================
+   About Page — Mobile Stack
+   ========================================== */
+
+@media (max-width: 767px) {
+  .about-content-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-8) !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .about-content-grid img {
+    max-height: 50vh !important;
   }
 }

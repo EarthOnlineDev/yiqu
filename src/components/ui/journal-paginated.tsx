@@ -143,7 +143,7 @@ export function JournalPaginated({ blocks, title }: JournalPaginatedProps) {
                 flex: 1,
                 display: hasImage && hasText ? "grid" : "flex",
                 gridTemplateColumns: hasImage && hasText ? "1fr 1fr" : undefined,
-                gridTemplateRows: hasImage && hasText ? "1fr" : undefined,
+                gridTemplateRows: hasImage && hasText ? "minmax(0, 1fr)" : undefined,
                 gap: "var(--space-10)",
                 overflow: "hidden",
                 minHeight: 0,

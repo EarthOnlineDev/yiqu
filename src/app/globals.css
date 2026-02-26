@@ -98,7 +98,7 @@ img {
   overflow: hidden;
   display: grid;
   grid-template-columns: 280px 1fr;
-  grid-template-rows: 1fr; /* Constrain row height so absolute-positioned content works */
+  grid-template-rows: minmax(0, 1fr); /* minmax(0,...) prevents content from inflating row beyond container */
   gap: var(--space-20);
   padding: var(--space-20);
   max-width: 1400px;
@@ -169,7 +169,7 @@ img {
   flex: 1;
   display: grid;
   grid-template-columns: 280px 1fr;
-  grid-template-rows: 1fr; /* Constrain row height so absolute-positioned content works */
+  grid-template-rows: minmax(0, 1fr); /* minmax(0,...) prevents content from inflating row beyond container */
   gap: var(--space-20);
   padding: var(--space-20); /* Same as sidebar-layout → brand at identical position */
   max-width: 1400px;

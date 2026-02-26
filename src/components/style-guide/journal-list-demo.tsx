@@ -1,19 +1,18 @@
 "use client";
 
 import { SectionWrapper } from "./section-wrapper";
-
-const entries = [
-  { title: "心裡的草原·心裡的土地", date: "2024.12.20" },
-  { title: "三點多的清晨太陽升起來", date: "2024.12.15" },
-  { title: "種子知道如何等待", date: "2024.12.08" },
-  { title: "想對小學時的自己說", date: "2024.11.30" },
-  { title: "大理的日出是溫柔", date: "2024.11.22" },
-  { title: "「在世間看」", date: "2024.11.15" },
-  { title: "一隻特立獨行的鳥", date: "2024.11.01" },
-  { title: "沉醉在無邊的灰白", date: "2024.10.25" },
-];
+import { getAllWorks, s2t } from "@/lib/works";
 
 export function JournalListDemo() {
+  const works = getAllWorks();
+
+  // Generate entries from works data with s2t conversion
+  const entries = works.map((work) => ({
+    title: s2t(work.title),
+    // Use a mock date since works.json doesn't have dates yet
+    date: "",
+  }));
+
   return (
     <SectionWrapper title="journal list">
       <div style={{ maxWidth: 800 }}>
@@ -53,18 +52,20 @@ export function JournalListDemo() {
             >
               {entry.title}
             </span>
-            <span
-              style={{
-                fontFamily: "var(--font-cormorant), Georgia, serif",
-                fontSize: "var(--text-sm)",
-                fontWeight: 400,
-                color: "var(--text-tertiary)",
-                flexShrink: 0,
-                marginLeft: "var(--space-8)",
-              }}
-            >
-              {entry.date}
-            </span>
+            {entry.date && (
+              <span
+                style={{
+                  fontFamily: "var(--font-cormorant), Georgia, serif",
+                  fontSize: "var(--text-sm)",
+                  fontWeight: 400,
+                  color: "var(--text-tertiary)",
+                  flexShrink: 0,
+                  marginLeft: "var(--space-8)",
+                }}
+              >
+                {entry.date}
+              </span>
+            )}
           </a>
         ))}
       </div>

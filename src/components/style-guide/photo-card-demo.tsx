@@ -1,6 +1,19 @@
+/* eslint-disable @next/next/no-img-element */
 import { SectionWrapper } from "./section-wrapper";
+import { getAllWorks, s2t } from "@/lib/works";
 
 export function PhotoCardDemo() {
+  const works = getAllWorks();
+
+  // Pick 3 works with nice images for the photo display
+  const photoWork1 = works[0]; // 心里的草原·心里的家
+  const photoWork2 = works[4]; // 大理的日出是温柔
+  const photoWork3 = works[9]; // 每日散步时间
+
+  // Use the first work's description for the series metadata
+  const seriesWork = works[0];
+  const descriptionLines = seriesWork.description.split("\n").slice(0, 3).join("\n");
+
   return (
     <SectionWrapper title="photo display">
       <div
@@ -22,7 +35,7 @@ export function PhotoCardDemo() {
               marginBottom: "var(--space-2)",
             }}
           >
-            散步日記
+            {seriesWork.series ? s2t(seriesWork.series) : "散步日記"}
           </p>
           <p
             style={{
@@ -43,72 +56,71 @@ export function PhotoCardDemo() {
               fontWeight: 400,
               color: "var(--text-secondary)",
               lineHeight: 1.8,
+              whiteSpace: "pre-line",
             }}
           >
-            大理的日常散步隨拍與文字記錄。<br />
-            沿著洱海，穿過古城，<br />
-            在光影裡慢慢走。
+            {s2t(descriptionLines)}
           </p>
         </div>
 
         {/* Right Column — Photos */}
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-32)" }}>
           {/* Photo 1 */}
-          <div>
-            <div
-              style={{
-                width: "100%",
-                aspectRatio: "3 / 2",
-                backgroundColor: "var(--bg-image)",
-              }}
-            />
-            <p
-              style={{
-                fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
-                fontSize: "var(--text-sm)",
-                fontWeight: 400,
-                color: "var(--text-secondary)",
-                marginTop: "var(--space-4)",
-                lineHeight: 1.6,
-              }}
-            >
-              草原環繞著我生長的土地
-            </p>
-          </div>
+          {photoWork1?.images[2] && (
+            <div>
+              <img
+                src={photoWork1.images[2].src}
+                alt={s2t(photoWork1.title)}
+                style={{ width: "100%", height: "auto" }}
+              />
+              <p
+                style={{
+                  fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
+                  fontSize: "var(--text-sm)",
+                  fontWeight: 400,
+                  color: "var(--text-secondary)",
+                  marginTop: "var(--space-4)",
+                  lineHeight: 1.6,
+                }}
+              >
+                {s2t(photoWork1.description.split("\n")[0])}
+              </p>
+            </div>
+          )}
 
           {/* Photo 2 */}
-          <div>
-            <div
-              style={{
-                width: "100%",
-                aspectRatio: "2 / 3",
-                backgroundColor: "var(--bg-image)",
-              }}
-            />
-            <p
-              style={{
-                fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
-                fontSize: "var(--text-sm)",
-                fontWeight: 400,
-                color: "var(--text-secondary)",
-                marginTop: "var(--space-4)",
-                lineHeight: 1.6,
-              }}
-            >
-              三點多的清晨太陽升起來
-            </p>
-          </div>
+          {photoWork2?.images[1] && (
+            <div>
+              <img
+                src={photoWork2.images[1].src}
+                alt={s2t(photoWork2.title)}
+                style={{ width: "100%", height: "auto" }}
+              />
+              <p
+                style={{
+                  fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
+                  fontSize: "var(--text-sm)",
+                  fontWeight: 400,
+                  color: "var(--text-secondary)",
+                  marginTop: "var(--space-4)",
+                  lineHeight: 1.6,
+                }}
+              >
+                {s2t(photoWork2.title)}
+              </p>
+            </div>
+          )}
 
-          {/* Photo 3 — No caption */}
-          <div>
-            <div
-              style={{
-                width: "100%",
-                aspectRatio: "16 / 9",
-                backgroundColor: "var(--bg-image)",
-              }}
-            />
-          </div>
+          {/* Photo 3 */}
+          {photoWork3?.images[1] && (
+            <div>
+              <img
+                src={photoWork3.images[1].src}
+                alt={s2t(photoWork3.title)}
+                style={{ width: "100%", height: "auto" }}
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -130,8 +142,7 @@ export function PhotoCardDemo() {
         >
           photos: no borders, no shadows, no rounded corners — sit directly on background<br />
           spacing between photos: 128px (--space-32)<br />
-          caption: 13px, secondary color, 16px gap from photo<br />
-          aspect ratios shown: 3:2 (landscape), 2:3 (portrait), 16:9 (cinematic)
+          caption: 13px, secondary color, 16px gap from photo
         </p>
       </div>
     </SectionWrapper>

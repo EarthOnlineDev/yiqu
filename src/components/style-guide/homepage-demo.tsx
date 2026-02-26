@@ -1,4 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
+import { getAllWorks, s2t } from "@/lib/works";
+
 export function HomepageDemo() {
+  const works = getAllWorks();
+  // Use the last work's first image as hero (沉醉在无边的灰白 — moody, editorial feel)
+  const heroWork = works[works.length - 2]; // 沉醉在无边的灰白
+  const heroImage = heroWork?.images[0];
+
   return (
     <div
       style={{
@@ -97,29 +105,18 @@ export function HomepageDemo() {
           paddingBottom: "var(--space-10)",
         }}
       >
-        <div
-          style={{
-            width: "100%",
-            maxWidth: 900,
-            aspectRatio: "3 / 2",
-            backgroundColor: "var(--bg-image)",
-            position: "relative",
-          }}
-        >
-          <p
+        {heroImage && (
+          <img
+            src={heroImage.src}
+            alt={s2t(heroWork.title)}
             style={{
-              position: "absolute",
-              bottom: "var(--space-6)",
-              right: "var(--space-6)",
-              fontFamily: "var(--font-cormorant), Georgia, serif",
-              fontSize: "var(--text-xs)",
-              color: "var(--text-tertiary)",
-              letterSpacing: "0.05em",
+              width: "100%",
+              maxWidth: 900,
+              height: "auto",
+              objectFit: "cover",
             }}
-          >
-            hero photograph
-          </p>
-        </div>
+          />
+        )}
       </div>
     </div>
   );

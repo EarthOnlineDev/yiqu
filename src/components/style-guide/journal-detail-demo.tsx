@@ -1,6 +1,17 @@
+/* eslint-disable @next/next/no-img-element */
 import { SectionWrapper } from "./section-wrapper";
+import { getWorkByIndex, s2t } from "@/lib/works";
 
 export function JournalDetailDemo() {
+  // Use work index 4: "大理的日出是温柔" — has rich text and multiple images
+  const work = getWorkByIndex(4);
+
+  if (!work) return null;
+
+  const title = s2t(work.title);
+  // Split description by "-" separator (used as section breaks in the content)
+  const descParts = work.description.split("\n-\n");
+
   return (
     <SectionWrapper title="journal detail">
       <div
@@ -17,86 +28,88 @@ export function JournalDetailDemo() {
             fontWeight: 400,
             color: "var(--text-primary)",
             lineHeight: 1.4,
-            marginBottom: "var(--space-3)",
+            marginBottom: "var(--space-16)",
           }}
         >
-          心裡的草原·心裡的土地
+          {title}
         </h2>
 
-        {/* Date */}
-        <p
-          style={{
-            fontFamily: "var(--font-cormorant), Georgia, serif",
-            fontSize: "var(--text-sm)",
-            fontWeight: 400,
-            color: "var(--text-tertiary)",
-            marginBottom: "var(--space-16)",
-          }}
-        >
-          2024.12.20
-        </p>
-
-        {/* Body Text */}
-        <p
-          style={{
-            fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
-            fontSize: "var(--text-base)",
-            fontWeight: 400,
-            color: "var(--text-primary)",
-            lineHeight: 2.0,
-            marginBottom: "var(--space-12)",
-          }}
-        >
-          草原環繞著我生長的土地，那裡有無邊的風和低垂的雲。清晨醒來的時候，窗外的光還是灰藍色的，遠處的蒼山隱在薄霧裡。
-        </p>
+        {/* Body Text — first paragraph */}
+        {descParts[0] && (
+          <p
+            style={{
+              fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
+              fontSize: "var(--text-base)",
+              fontWeight: 400,
+              color: "var(--text-primary)",
+              lineHeight: 2.0,
+              marginBottom: "var(--space-12)",
+              whiteSpace: "pre-line",
+            }}
+          >
+            {s2t(descParts[0].trim())}
+          </p>
+        )}
 
         {/* Inline Photo */}
-        <div
-          style={{
-            width: "100%",
-            aspectRatio: "3 / 2",
-            backgroundColor: "var(--bg-image)",
-            marginBottom: "var(--space-12)",
-          }}
-        />
+        {work.images[0] && (
+          <img
+            src={work.images[0].src}
+            alt={title}
+            style={{
+              width: "100%",
+              height: "auto",
+              marginBottom: "var(--space-12)",
+            }}
+          />
+        )}
 
-        {/* More Body Text */}
-        <p
-          style={{
-            fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
-            fontSize: "var(--text-base)",
-            fontWeight: 400,
-            color: "var(--text-primary)",
-            lineHeight: 2.0,
-            marginBottom: "var(--space-12)",
-          }}
-        >
-          沿著田埂走了很久，腳下的泥土是濕潤的，空氣裡有青草和泥土混合的氣味。遠處有人在燒稻草，煙氣升起來又被風吹散。一切都很慢，慢到可以聽見自己的呼吸。
-        </p>
+        {/* More Body Text — second paragraph */}
+        {descParts[1] && (
+          <p
+            style={{
+              fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
+              fontSize: "var(--text-base)",
+              fontWeight: 400,
+              color: "var(--text-primary)",
+              lineHeight: 2.0,
+              marginBottom: "var(--space-12)",
+              whiteSpace: "pre-line",
+            }}
+          >
+            {s2t(descParts[1].trim())}
+          </p>
+        )}
 
         {/* Another Photo */}
-        <div
-          style={{
-            width: "100%",
-            aspectRatio: "2 / 3",
-            backgroundColor: "var(--bg-image)",
-            marginBottom: "var(--space-12)",
-          }}
-        />
+        {work.images[2] && (
+          <img
+            src={work.images[2].src}
+            alt={`${title} — 2`}
+            style={{
+              width: "100%",
+              height: "auto",
+              marginBottom: "var(--space-12)",
+            }}
+          />
+        )}
 
-        {/* Ending Text */}
-        <p
-          style={{
-            fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
-            fontSize: "var(--text-base)",
-            fontWeight: 400,
-            color: "var(--text-primary)",
-            lineHeight: 2.0,
-            marginBottom: "var(--space-16)",
-          }}
-        >
-          回去的路上，夕陽把所有的東西都染成了金色。我站在那裡看了很久，直到天完全暗下來。
-        </p>
+        {/* Ending Text — third paragraph */}
+        {descParts[2] && (
+          <p
+            style={{
+              fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
+              fontSize: "var(--text-base)",
+              fontWeight: 400,
+              color: "var(--text-primary)",
+              lineHeight: 2.0,
+              marginBottom: "var(--space-16)",
+              whiteSpace: "pre-line",
+            }}
+          >
+            {s2t(descParts[2].trim())}
+          </p>
+        )}
 
         {/* Back Link */}
         <a

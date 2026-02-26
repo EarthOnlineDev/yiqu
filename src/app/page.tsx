@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getAllWorks, s2t } from "@/lib/works";
 import { SidebarLayout } from "@/components/layout/sidebar-layout";
 import { WorkImage } from "@/components/ui/work-image";
@@ -12,12 +13,14 @@ export default function HomePage() {
 
   return (
     <SidebarLayout currentPath="/">
-      <WorkImage
-        src={heroImage.src}
-        alt={s2t(heroWork.title)}
-        contain
-        priority
-      />
+      <Link href="/works" style={{ display: "block", height: "100%", cursor: "pointer" }}>
+        <WorkImage
+          src={heroImage.src}
+          alt={s2t(heroWork.title)}
+          contain
+          priority
+        />
+      </Link>
     </SidebarLayout>
   );
 }

@@ -77,6 +77,29 @@ async function downloadAttachment(token, fileToken, filename) {
   return `/images/works/${filename}`;
 }
 
+/**
+ * Extract a readable string from a Feishu Bitable field value.
+ * Handles: plain string, number (timestamp ms), rich-text array, object with text.
+ */
+function extractText(value) {
+  if (value == null) return "";
+  if (typeof value === "string") return value;
+  // Date fields come as timestamp in milliseconds
+  if (typeof value === "number") {
+    const d = new Date(value);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}.${m}.${day}`;
+  }
+  // Rich-text: array of { text: "..." } segments
+  if (Array.isArray(value)) {
+    return value.map((seg) => (seg && seg.text) || "").join("");
+  }
+  if (typeof value === "object" && value.text) return value.text;
+  return String(value);
+}
+
 async function main() {
   console.log("=== Fetching data from Feishu Bitable ===\n");
 
@@ -139,8 +162,8 @@ async function main() {
             : String(description)
         : "",
       series: series || "",
-      publishDate: publishDate || "",
-      location: location || "",
+      publishDate: extractText(publishDate),
+      location: extractText(location),
       images,
     });
   }

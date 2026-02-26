@@ -15,9 +15,8 @@ interface ImageCarouselProps {
 
 export function ImageCarousel({ images, alt }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [initialLoaded, setInitialLoaded] = useState(false);
   const [hoverSide, setHoverSide] = useState<"left" | "right" | null>(null);
+  const [loadedSet, setLoadedSet] = useState<ReadonlySet<number>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
 
@@ -26,12 +25,13 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
 
   const goTo = useCallback(
     (index: number) => {
-      if (isTransitioning || !hasMultiple) return;
-      setIsTransitioning(true);
-      setCurrentIndex(((index % total) + total) % total);
-      setTimeout(() => setIsTransitioning(false), 300);
+      if (!hasMultiple) return;
+      const next = ((index % total) + total) % total;
+      if (next !== currentIndex) {
+        setCurrentIndex(next);
+      }
     },
-    [isTransitioning, hasMultiple, total]
+    [hasMultiple, total, currentIndex]
   );
 
   const goPrev = useCallback(
@@ -89,15 +89,18 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
       ? "w-resize"
       : "e-resize";
 
-  // Handle first image load for gentle fade-in
-  const handleImageLoad = useCallback(() => {
-    if (!initialLoaded) {
-      requestAnimationFrame(() => setInitialLoaded(true));
-    }
-  }, [initialLoaded]);
+  // Track image load state
+  const handleImageLoad = useCallback((index: number) => {
+    setLoadedSet((prev) => {
+      if (prev.has(index)) return prev;
+      const next = new Set(prev);
+      next.add(index);
+      return next;
+    });
+  }, []);
 
-  // Compute image opacity: initial fade-in + navigation dip
-  const imageOpacity = !initialLoaded ? 0 : isTransitioning ? 0.6 : 1;
+  // First image loaded = show counter
+  const firstLoaded = loadedSet.has(0);
 
   return (
     <div
@@ -109,36 +112,47 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
       onTouchEnd={handleTouchEnd}
       style={{
         flex: 1,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
         position: "relative",
         cursor: cursorStyle,
         overflow: "hidden",
         minHeight: 0,
       }}
     >
-      {/* Current image */}
-      <Image
-        key={images[currentIndex].src}
-        src={images[currentIndex].src}
-        alt={`${alt} — ${currentIndex + 1}`}
-        width={0}
-        height={0}
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 900px"
-        style={{
-          width: "auto",
-          height: "auto",
-          maxWidth: "100%",
-          maxHeight: "100%",
-          objectFit: "contain",
-          display: "block",
-          opacity: imageOpacity,
-          transition: "opacity 300ms ease",
-        }}
-        priority
-        onLoad={handleImageLoad}
-      />
+      {/* TRUE CROSSFADE: All images stacked, CSS opacity transitions */}
+      {images.map((image, index) => (
+        <div
+          key={image.src}
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: index === currentIndex && loadedSet.has(index) ? 1 : 0,
+            transition: "opacity 600ms ease",
+            pointerEvents: index === currentIndex ? "auto" : "none",
+          }}
+        >
+          <Image
+            src={image.src}
+            alt={`${alt} — ${index + 1}`}
+            width={0}
+            height={0}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 900px"
+            style={{
+              width: "auto",
+              height: "auto",
+              maxWidth: "100%",
+              maxHeight: "100%",
+              objectFit: "contain",
+              display: "block",
+            }}
+            priority={index === 0}
+            loading={index === 0 ? undefined : "eager"}
+            onLoad={() => handleImageLoad(index)}
+          />
+        </div>
+      ))}
 
       {/* Counter */}
       {hasMultiple && (
@@ -152,38 +166,12 @@ export function ImageCarousel({ images, alt }: ImageCarouselProps) {
             color: "var(--text-tertiary)",
             letterSpacing: "0.1em",
             userSelect: "none",
-            opacity: initialLoaded ? 1 : 0,
+            opacity: firstLoaded ? 1 : 0,
             transition: "opacity 300ms ease",
           }}
         >
           {currentIndex + 1} / {total}
         </span>
-      )}
-
-      {/* Preload next + prev images (hidden) */}
-      {hasMultiple && (
-        <>
-          <Image
-            src={images[(currentIndex + 1) % total].src}
-            alt=""
-            width={0}
-            height={0}
-            sizes="1px"
-            style={{ position: "absolute", width: 0, height: 0, opacity: 0 }}
-            aria-hidden
-          />
-          {total > 2 && (
-            <Image
-              src={images[(currentIndex - 1 + total) % total].src}
-              alt=""
-              width={0}
-              height={0}
-              sizes="1px"
-              style={{ position: "absolute", width: 0, height: 0, opacity: 0 }}
-              aria-hidden
-            />
-          )}
-        </>
       )}
     </div>
   );

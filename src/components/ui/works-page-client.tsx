@@ -27,20 +27,12 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
     [displayIndex]
   );
 
-  // Preload all work detail images in the background
-  // so they're cached when user clicks into a work
+  // Preload after first render — delay to not compete with visible images
+  const [preloadReady, setPreloadReady] = useState(false);
   useEffect(() => {
-    // Delay preloading slightly to not compete with initial page render
-    const timer = setTimeout(() => {
-      works.forEach((work) => {
-        work.allImageSrcs.forEach((src) => {
-          const img = new window.Image();
-          img.src = src;
-        });
-      });
-    }, 1000);
+    const timer = setTimeout(() => setPreloadReady(true), 2000);
     return () => clearTimeout(timer);
-  }, [works]);
+  }, []);
 
   return (
     <>
@@ -245,6 +237,27 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
           &copy; 2026 YIQU
         </p>
       </div>
+
+      {/* Hidden preload: render actual Next.js <Image> components so the
+          optimized /_next/image URLs get cached by the browser. When user
+          clicks into a work detail, the carousel images are already warm. */}
+      {preloadReady && (
+        <div aria-hidden style={{ position: "absolute", width: 0, height: 0, overflow: "hidden", opacity: 0 }}>
+          {works.flatMap((work) =>
+            work.allImageSrcs.slice(1).map((src) => (
+              <Image
+                key={src}
+                src={src}
+                alt=""
+                width={0}
+                height={0}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 900px"
+                loading="lazy"
+              />
+            ))
+          )}
+        </div>
+      )}
     </>
   );
 }

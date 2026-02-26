@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllWorks, getWorkById, s2t } from "@/lib/works";
-import { SidebarLayout } from "@/components/layout/sidebar-layout";
-import { ImageCarousel } from "@/components/ui/image-carousel";
+import { WorkDetailClient } from "@/components/ui/work-detail-client";
 
 interface PageProps {
   readonly params: Promise<{ id: string }>;
@@ -24,61 +23,31 @@ export async function generateMetadata({
 
 export default async function WorkDetailPage({ params }: PageProps) {
   const { id } = await params;
+  const works = getAllWorks();
   const work = getWorkById(id);
 
   if (!work) notFound();
 
-  // Aside content: title + series + description
-  const asideContent = (
-    <div style={{ marginTop: "var(--space-16)" }}>
-      <h1
-        style={{
-          fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
-          fontSize: "var(--text-lg)",
-          fontWeight: 400,
-          color: "var(--text-primary)",
-          lineHeight: 1.6,
-        }}
-      >
-        {s2t(work.title)}
-      </h1>
+  const currentIndex = works.findIndex((w) => w.id === id);
 
-      {work.series && (
-        <p
-          style={{
-            fontFamily: "var(--font-cormorant), Georgia, serif",
-            fontSize: "var(--text-sm)",
-            fontWeight: 400,
-            color: "var(--text-secondary)",
-            letterSpacing: "0.02em",
-            marginTop: "var(--space-2)",
-          }}
-        >
-          {s2t(work.series)}
-        </p>
-      )}
+  const prevWork =
+    currentIndex > 0
+      ? { id: works[currentIndex - 1].id, titleTC: s2t(works[currentIndex - 1].title) }
+      : null;
 
-      <p
-        style={{
-          fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
-          fontSize: "var(--text-xs)",
-          fontWeight: 400,
-          color: "var(--text-secondary)",
-          lineHeight: 1.8,
-          marginTop: "var(--space-6)",
-          whiteSpace: "pre-line",
-          overflow: "auto",
-          maxHeight: "40vh",
-        }}
-      >
-        {s2t(work.description)}
-      </p>
-    </div>
-  );
+  const nextWork =
+    currentIndex < works.length - 1
+      ? { id: works[currentIndex + 1].id, titleTC: s2t(works[currentIndex + 1].title) }
+      : null;
 
   return (
-    <SidebarLayout currentPath="/works" asideExtra={asideContent}>
-      <ImageCarousel images={work.images} alt={s2t(work.title)} />
-    </SidebarLayout>
+    <WorkDetailClient
+      titleTC={s2t(work.title)}
+      seriesTC={work.series ? s2t(work.series) : undefined}
+      descriptionTC={s2t(work.description)}
+      images={work.images}
+      prevWork={prevWork}
+      nextWork={nextWork}
+    />
   );
 }

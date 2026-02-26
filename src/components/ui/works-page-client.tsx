@@ -16,13 +16,21 @@ interface WorksPageClientProps {
 
 export function WorksPageClient({ works }: WorksPageClientProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [imageLoaded, setImageLoaded] = useState(true); // first image has priority
+
+  const handleHover = (index: number) => {
+    if (index !== activeIndex) {
+      setImageLoaded(false);
+      setActiveIndex(index);
+    }
+  };
 
   return (
     <div
       className="sidebar-layout"
       style={{ height: "100vh", overflow: "hidden" }}
     >
-      {/* Left sidebar: branding + nav + work titles */}
+      {/* Left sidebar: branding + work titles */}
       <aside className="sidebar-aside">
         <div
           style={{
@@ -81,7 +89,7 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
               <Link
                 key={work.id}
                 href={`/works/${work.id}`}
-                onMouseEnter={() => setActiveIndex(index)}
+                onMouseEnter={() => handleHover(index)}
                 style={{
                   fontFamily:
                     "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
@@ -118,7 +126,7 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
         </div>
       </aside>
 
-      {/* Right: preview image */}
+      {/* Right: clickable preview image with onLoad fade-in */}
       <main
         style={{
           height: "100%",
@@ -126,26 +134,41 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          backgroundColor: "var(--bg-image)",
         }}
       >
-        <Image
-          key={works[activeIndex].firstImageSrc}
-          src={works[activeIndex].firstImageSrc}
-          alt={works[activeIndex].titleTC}
-          width={0}
-          height={0}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 900px"
+        <Link
+          href={`/works/${works[activeIndex].id}`}
           style={{
-            width: "auto",
-            height: "auto",
-            maxWidth: "100%",
-            maxHeight: "calc(100vh - 160px)",
-            objectFit: "contain",
-            display: "block",
-            transition: "opacity 300ms ease",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            height: "100%",
           }}
-          priority
-        />
+        >
+          <Image
+            key={works[activeIndex].firstImageSrc}
+            src={works[activeIndex].firstImageSrc}
+            alt={works[activeIndex].titleTC}
+            width={0}
+            height={0}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 900px"
+            style={{
+              width: "auto",
+              height: "auto",
+              maxWidth: "100%",
+              maxHeight: "calc(100vh - 160px)",
+              objectFit: "contain",
+              display: "block",
+              cursor: "pointer",
+              opacity: imageLoaded ? 1 : 0,
+              transition: "opacity 500ms ease-out",
+            }}
+            priority
+            onLoad={() => setImageLoaded(true)}
+          />
+        </Link>
       </main>
     </div>
   );

@@ -16,15 +16,8 @@ interface WorksPageClientProps {
   readonly works: readonly WorkPreviewItem[];
 }
 
-const sectionLinks = [
-  { href: "/journal", label: "Journal" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-] as const;
-
 export function WorksPageClient({ works }: WorksPageClientProps) {
   const [displayIndex, setDisplayIndex] = useState(0);
-  const [hoveredNav, setHoveredNav] = useState<string | null>(null);
 
   const handleHover = useCallback(
     (index: number) => {
@@ -41,17 +34,6 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
     const timer = setTimeout(() => setPreloadReady(true), 2000);
     return () => clearTimeout(timer);
   }, []);
-
-  const navLinkStyle = (key: string): React.CSSProperties => ({
-    fontFamily: "var(--font-cormorant), Georgia, serif",
-    fontSize: "var(--text-sm)",
-    fontWeight: 400,
-    letterSpacing: "0.05em",
-    color:
-      hoveredNav === key ? "var(--text-primary)" : "var(--text-secondary)",
-    textDecoration: "none",
-    transition: "color var(--transition-normal)",
-  });
 
   /* Work titles list — passed to SidebarNav as asideExtra */
   const workTitlesNav = (
@@ -92,93 +74,64 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
 
   return (
     <>
-      {/* ===== Desktop: top nav + sidebar + hover preview ===== */}
-      <div className="works-desktop work-detail-wrapper">
-        {/* Top nav: current section + links to other sections */}
-        <nav className="work-top-nav">
-          <span
-            style={{
-              fontFamily: "var(--font-cormorant), Georgia, serif",
-              fontSize: "var(--text-sm)",
-              fontWeight: 400,
-              letterSpacing: "0.05em",
-              color: "var(--text-primary)",
-              textDecoration: "underline",
-              textUnderlineOffset: "4px",
-            }}
-          >
-            Works
-          </span>
+      {/* ===== Desktop: sidebar + hover preview with true crossfade ===== */}
+      <div
+        className="sidebar-layout works-desktop"
+        style={{ height: "100vh", overflow: "hidden" }}
+      >
+        {/* Left sidebar: branding + work titles (via SidebarNav for consistent brand position) */}
+        <aside className="sidebar-aside">
+          <SidebarNav
+            currentPath="/works"
+            hideMainNav
+            asideExtra={workTitlesNav}
+          />
+        </aside>
 
-          <div style={{ display: "flex", gap: "var(--space-6)" }}>
-            {sectionLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                style={navLinkStyle(link.label)}
-                onMouseEnter={() => setHoveredNav(link.label)}
-                onMouseLeave={() => setHoveredNav(null)}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </nav>
-
-        {/* Sidebar (brand + work titles) + image preview */}
-        <div className="work-detail-grid">
-          <aside className="sidebar-aside">
-            <SidebarNav
-              currentPath="/works"
-              hideMainNav
-              asideExtra={workTitlesNav}
-            />
-          </aside>
-          <main
-            style={{
-              height: "100%",
-              overflow: "hidden",
-              position: "relative",
-            }}
-          >
-            {/* TRUE crossfade — all images stacked, CSS handles transition */}
-            {works.map((work, index) => (
-              <Link
-                key={work.id}
-                href={`/works/${work.id}`}
+        {/* Right: TRUE crossfade — all images stacked, CSS handles transition */}
+        <main
+          style={{
+            height: "100%",
+            overflow: "hidden",
+            position: "relative",
+          }}
+        >
+          {works.map((work, index) => (
+            <Link
+              key={work.id}
+              href={`/works/${work.id}`}
+              style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                opacity: index === displayIndex ? 1 : 0,
+                transition: "opacity 600ms ease",
+                pointerEvents: index === displayIndex ? "auto" : "none",
+              }}
+            >
+              <Image
+                src={work.firstImageSrc}
+                alt={work.titleTC}
+                width={0}
+                height={0}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 900px"
                 style={{
-                  position: "absolute",
-                  inset: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  opacity: index === displayIndex ? 1 : 0,
-                  transition: "opacity 600ms ease",
-                  pointerEvents: index === displayIndex ? "auto" : "none",
+                  width: "auto",
+                  height: "auto",
+                  maxWidth: "100%",
+                  maxHeight: "calc(100vh - 160px)",
+                  objectFit: "contain",
+                  display: "block",
+                  cursor: "pointer",
                 }}
-              >
-                <Image
-                  src={work.firstImageSrc}
-                  alt={work.titleTC}
-                  width={0}
-                  height={0}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 900px"
-                  style={{
-                    width: "auto",
-                    height: "auto",
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    objectFit: "contain",
-                    display: "block",
-                    cursor: "pointer",
-                  }}
-                  priority={index === 0}
-                  loading={index === 0 ? undefined : "eager"}
-                />
-              </Link>
-            ))}
-          </main>
-        </div>
+                priority={index === 0}
+                loading={index === 0 ? undefined : "eager"}
+              />
+            </Link>
+          ))}
+        </main>
       </div>
 
       {/* ===== Mobile: vertical scrollable list of works ===== */}

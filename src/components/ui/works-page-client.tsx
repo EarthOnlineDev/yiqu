@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useCallback, useEffect } from "react";
+import { SidebarNav } from "@/components/layout/sidebar-nav";
 
 interface WorkPreviewItem {
   readonly id: string;
@@ -15,8 +16,15 @@ interface WorksPageClientProps {
   readonly works: readonly WorkPreviewItem[];
 }
 
+const sectionLinks = [
+  { href: "/journal", label: "Journal" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+] as const;
+
 export function WorksPageClient({ works }: WorksPageClientProps) {
   const [displayIndex, setDisplayIndex] = useState(0);
+  const [hoveredNav, setHoveredNav] = useState<string | null>(null);
 
   const handleHover = useCallback(
     (index: number) => {
@@ -34,153 +42,143 @@ export function WorksPageClient({ works }: WorksPageClientProps) {
     return () => clearTimeout(timer);
   }, []);
 
-  return (
-    <>
-      {/* ===== Desktop: sidebar + hover preview with true crossfade ===== */}
-      <div
-        className="sidebar-layout works-desktop"
-        style={{ height: "100vh", overflow: "hidden" }}
-      >
-        {/* Left sidebar: branding + work titles */}
-        <aside className="sidebar-aside">
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              height: "100%",
-              paddingTop: "var(--space-10)",
-              overflow: "hidden",
-            }}
-          >
-            {/* Brand */}
-            <Link
-              href="/"
-              style={{
-                textDecoration: "none",
-                marginBottom: "var(--space-12)",
-              }}
-            >
-              <p
-                style={{
-                  fontFamily:
-                    "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
-                  fontSize: "var(--text-3xl)",
-                  fontWeight: 400,
-                  color: "var(--text-primary)",
-                  lineHeight: 1.2,
-                  marginBottom: "var(--space-2)",
-                }}
-              >
-                一曲
-              </p>
-              <p
-                style={{
-                  fontFamily: "var(--font-cormorant), Georgia, serif",
-                  fontSize: "var(--text-xl)",
-                  fontWeight: 400,
-                  color: "var(--text-secondary)",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                YIQU
-              </p>
-            </Link>
+  const navLinkStyle = (key: string): React.CSSProperties => ({
+    fontFamily: "var(--font-cormorant), Georgia, serif",
+    fontSize: "var(--text-sm)",
+    fontWeight: 400,
+    letterSpacing: "0.05em",
+    color:
+      hoveredNav === key ? "var(--text-primary)" : "var(--text-secondary)",
+    textDecoration: "none",
+    transition: "color var(--transition-normal)",
+  });
 
-            {/* Work titles as navigation */}
-            <nav
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "var(--space-3)",
-                flex: 1,
-                overflow: "hidden",
-              }}
-            >
-              {works.map((work, index) => (
-                <Link
-                  key={work.id}
-                  href={`/works/${work.id}`}
-                  onMouseEnter={() => handleHover(index)}
-                  style={{
-                    fontFamily:
-                      "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
-                    fontSize: "var(--text-sm)",
-                    fontWeight: 400,
-                    color:
-                      index === displayIndex
-                        ? "var(--text-primary)"
-                        : "var(--text-tertiary)",
-                    textDecoration: "none",
-                    transition: "color var(--transition-normal)",
-                    lineHeight: 1.6,
-                    display: "block",
-                  }}
-                >
-                  {work.titleTC}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Footer */}
-            <p
-              style={{
-                fontFamily: "var(--font-cormorant), Georgia, serif",
-                fontSize: "var(--text-xs)",
-                color: "var(--text-tertiary)",
-                paddingBottom: "var(--space-10)",
-                paddingTop: "var(--space-4)",
-                flexShrink: 0,
-              }}
-            >
-              &copy; 2026 YIQU
-            </p>
-          </div>
-        </aside>
-
-        {/* Right: TRUE crossfade — all images stacked, CSS handles transition */}
-        <main
+  /* Work titles list — passed to SidebarNav as asideExtra */
+  const workTitlesNav = (
+    <nav
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "var(--space-3)",
+        flex: 1,
+        overflow: "hidden",
+      }}
+    >
+      {works.map((work, index) => (
+        <Link
+          key={work.id}
+          href={`/works/${work.id}`}
+          onMouseEnter={() => handleHover(index)}
           style={{
-            height: "100%",
-            overflow: "hidden",
-            position: "relative",
+            fontFamily:
+              "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
+            fontSize: "var(--text-sm)",
+            fontWeight: 400,
+            color:
+              index === displayIndex
+                ? "var(--text-primary)"
+                : "var(--text-tertiary)",
+            textDecoration: "none",
+            transition: "color var(--transition-normal)",
+            lineHeight: 1.6,
+            display: "block",
           }}
         >
-          {works.map((work, index) => (
-            <Link
-              key={work.id}
-              href={`/works/${work.id}`}
-              style={{
-                position: "absolute",
-                inset: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                opacity: index === displayIndex ? 1 : 0,
-                transition: "opacity 600ms ease",
-                pointerEvents: index === displayIndex ? "auto" : "none",
-              }}
-            >
-              <Image
-                src={work.firstImageSrc}
-                alt={work.titleTC}
-                width={0}
-                height={0}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 900px"
+          {work.titleTC}
+        </Link>
+      ))}
+    </nav>
+  );
+
+  return (
+    <>
+      {/* ===== Desktop: top nav + sidebar + hover preview ===== */}
+      <div className="works-desktop work-detail-wrapper">
+        {/* Top nav: current section + links to other sections */}
+        <nav className="work-top-nav">
+          <span
+            style={{
+              fontFamily: "var(--font-cormorant), Georgia, serif",
+              fontSize: "var(--text-sm)",
+              fontWeight: 400,
+              letterSpacing: "0.05em",
+              color: "var(--text-primary)",
+              textDecoration: "underline",
+              textUnderlineOffset: "4px",
+            }}
+          >
+            Works
+          </span>
+
+          <div style={{ display: "flex", gap: "var(--space-6)" }}>
+            {sectionLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                style={navLinkStyle(link.label)}
+                onMouseEnter={() => setHoveredNav(link.label)}
+                onMouseLeave={() => setHoveredNav(null)}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </nav>
+
+        {/* Sidebar (brand + work titles) + image preview */}
+        <div className="work-detail-grid">
+          <aside className="sidebar-aside">
+            <SidebarNav
+              currentPath="/works"
+              hideMainNav
+              asideExtra={workTitlesNav}
+            />
+          </aside>
+          <main
+            style={{
+              height: "100%",
+              overflow: "hidden",
+              position: "relative",
+            }}
+          >
+            {/* TRUE crossfade — all images stacked, CSS handles transition */}
+            {works.map((work, index) => (
+              <Link
+                key={work.id}
+                href={`/works/${work.id}`}
                 style={{
-                  width: "auto",
-                  height: "auto",
-                  maxWidth: "100%",
-                  maxHeight: "calc(100vh - 160px)",
-                  objectFit: "contain",
-                  display: "block",
-                  cursor: "pointer",
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: index === displayIndex ? 1 : 0,
+                  transition: "opacity 600ms ease",
+                  pointerEvents: index === displayIndex ? "auto" : "none",
                 }}
-                priority={index === 0}
-                loading={index === 0 ? undefined : "eager"}
-              />
-            </Link>
-          ))}
-        </main>
+              >
+                <Image
+                  src={work.firstImageSrc}
+                  alt={work.titleTC}
+                  width={0}
+                  height={0}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 900px"
+                  style={{
+                    width: "auto",
+                    height: "auto",
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    objectFit: "contain",
+                    display: "block",
+                    cursor: "pointer",
+                  }}
+                  priority={index === 0}
+                  loading={index === 0 ? undefined : "eager"}
+                />
+              </Link>
+            ))}
+          </main>
+        </div>
       </div>
 
       {/* ===== Mobile: vertical scrollable list of works ===== */}

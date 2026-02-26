@@ -37,21 +37,6 @@ export function WorkDetailAside({
         >
           {titleTC}
         </p>
-
-        {/* Date + Location — subtle metadata line */}
-        {hasMeta && (
-          <p
-            style={{
-              fontFamily: "var(--font-cormorant), Georgia, serif",
-              fontSize: "var(--text-xs)",
-              color: "var(--text-tertiary)",
-              letterSpacing: "0.02em",
-              marginTop: "var(--space-2)",
-            }}
-          >
-            {[publishDate, locationTC].filter(Boolean).join("  ·  ")}
-          </p>
-        )}
       </div>
 
       {/* Description — scrollable for long text */}
@@ -77,6 +62,21 @@ export function WorkDetailAside({
             {descriptionTC}
           </p>
         </div>
+      )}
+
+      {/* Date + Location — below description */}
+      {hasMeta && (
+        <p
+          style={{
+            fontFamily: "var(--font-cormorant), Georgia, serif",
+            fontSize: "var(--text-xs)",
+            color: "var(--text-tertiary)",
+            letterSpacing: "0.02em",
+            flexShrink: 0,
+          }}
+        >
+          {[publishDate, locationTC].filter(Boolean).join("  \u00b7  ")}
+        </p>
       )}
     </div>
   );

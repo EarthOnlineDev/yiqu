@@ -178,7 +178,6 @@ export function JournalPaginated({ blocks, title }: JournalPaginatedProps) {
                     justifyContent: "center",
                     height: "100%",
                     overflow: "hidden",
-                    backgroundColor: "var(--bg-image)",
                   }}
                 >
                   <Image

@@ -75,19 +75,6 @@ export default async function WorkDetailPage({ params }: PageProps) {
         >
           {titleTC}
         </p>
-        {(publishDate || locationTC) && (
-          <p
-            style={{
-              fontFamily: "var(--font-cormorant), Georgia, serif",
-              fontSize: "var(--text-xs)",
-              color: "var(--text-tertiary)",
-              letterSpacing: "0.02em",
-              marginTop: "var(--space-2)",
-            }}
-          >
-            {[publishDate, locationTC].filter(Boolean).join("  ·  ")}
-          </p>
-        )}
       </div>
 
       {/* Content: sidebar (brand + metadata) + carousel */}
@@ -114,6 +101,19 @@ export default async function WorkDetailPage({ params }: PageProps) {
             }}
           >
             {descriptionTC}
+          </p>
+        )}
+        {(publishDate || locationTC) && (
+          <p
+            style={{
+              fontFamily: "var(--font-cormorant), Georgia, serif",
+              fontSize: "var(--text-xs)",
+              color: "var(--text-tertiary)",
+              letterSpacing: "0.02em",
+              marginTop: "var(--space-6)",
+            }}
+          >
+            {[publishDate, locationTC].filter(Boolean).join("  \u00b7  ")}
           </p>
         )}
         <p

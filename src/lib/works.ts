@@ -66,11 +66,7 @@ export function prepareJournalBlocks(work: Work): readonly ContentBlock[] {
     }
   });
 
-  // Remaining images not paired with text
-  const pairedCount = Math.min(sections.length, work.images.length);
-  work.images.slice(pairedCount).forEach((img) => {
-    blocks.push({ text: "", imageSrc: img.src });
-  });
-
-  return blocks;
+  // Filter out any blocks that have no text (image-only pages).
+  // Extra images without paired text are skipped for now.
+  return blocks.filter((block) => block.text.trim().length > 0);
 }

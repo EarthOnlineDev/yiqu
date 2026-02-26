@@ -11,9 +11,18 @@ interface WorkNav {
 interface WorkTopNavProps {
   readonly prevWork: WorkNav | null;
   readonly nextWork: WorkNav | null;
+  readonly backLabel?: string;
+  readonly backHref?: string;
+  readonly basePath?: string;
 }
 
-export function WorkTopNav({ prevWork, nextWork }: WorkTopNavProps) {
+export function WorkTopNav({
+  prevWork,
+  nextWork,
+  backLabel = "Works",
+  backHref = "/works",
+  basePath = "/works",
+}: WorkTopNavProps) {
   const [hovered, setHovered] = useState<string | null>(null);
 
   const linkStyle = (key: string, disabled?: boolean): React.CSSProperties => ({
@@ -33,18 +42,18 @@ export function WorkTopNav({ prevWork, nextWork }: WorkTopNavProps) {
   return (
     <nav className="work-top-nav">
       <Link
-        href="/works"
-        style={linkStyle("works")}
-        onMouseEnter={() => setHovered("works")}
+        href={backHref}
+        style={linkStyle("back")}
+        onMouseEnter={() => setHovered("back")}
         onMouseLeave={() => setHovered(null)}
       >
-        &larr; Works
+        &larr; {backLabel}
       </Link>
 
       <div style={{ display: "flex", gap: "var(--space-6)" }}>
         {prevWork ? (
           <Link
-            href={`/works/${prevWork.id}`}
+            href={`${basePath}/${prevWork.id}`}
             style={linkStyle("prev")}
             onMouseEnter={() => setHovered("prev")}
             onMouseLeave={() => setHovered(null)}
@@ -57,7 +66,7 @@ export function WorkTopNav({ prevWork, nextWork }: WorkTopNavProps) {
 
         {nextWork ? (
           <Link
-            href={`/works/${nextWork.id}`}
+            href={`${basePath}/${nextWork.id}`}
             style={linkStyle("next")}
             onMouseEnter={() => setHovered("next")}
             onMouseLeave={() => setHovered(null)}

@@ -44,7 +44,6 @@ export default async function WorkDetailPage({ params }: PageProps) {
       : null;
 
   const titleTC = s2t(work.title);
-  const seriesTC = work.series ? s2t(work.series) : undefined;
   const descriptionTC = s2t(work.description);
   const locationTC = work.location ? s2t(work.location) : undefined;
   const publishDate = work.publishDate || undefined;
@@ -52,7 +51,6 @@ export default async function WorkDetailPage({ params }: PageProps) {
   const asideContent = (
     <WorkDetailAside
       titleTC={titleTC}
-      seriesTC={seriesTC}
       descriptionTC={descriptionTC}
       publishDate={publishDate}
       locationTC={locationTC}
@@ -77,19 +75,6 @@ export default async function WorkDetailPage({ params }: PageProps) {
         >
           {titleTC}
         </p>
-        {seriesTC && (
-          <p
-            style={{
-              fontFamily: "var(--font-cormorant), Georgia, serif",
-              fontSize: "var(--text-xs)",
-              color: "var(--text-tertiary)",
-              letterSpacing: "0.02em",
-              marginTop: "var(--space-1)",
-            }}
-          >
-            {seriesTC}
-          </p>
-        )}
         {(publishDate || locationTC) && (
           <p
             style={{

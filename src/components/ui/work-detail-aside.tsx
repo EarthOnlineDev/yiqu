@@ -1,6 +1,5 @@
 interface WorkDetailAsideProps {
   readonly titleTC: string;
-  readonly seriesTC?: string;
   readonly descriptionTC: string;
   readonly publishDate?: string;
   readonly locationTC?: string;
@@ -8,7 +7,6 @@ interface WorkDetailAsideProps {
 
 export function WorkDetailAside({
   titleTC,
-  seriesTC,
   descriptionTC,
   publishDate,
   locationTC,
@@ -25,7 +23,7 @@ export function WorkDetailAside({
         minHeight: 0,
       }}
     >
-      {/* Title + Series */}
+      {/* Title */}
       <div style={{ flexShrink: 0 }}>
         <p
           style={{
@@ -39,20 +37,6 @@ export function WorkDetailAside({
         >
           {titleTC}
         </p>
-
-        {seriesTC && (
-          <p
-            style={{
-              fontFamily: "var(--font-cormorant), Georgia, serif",
-              fontSize: "var(--text-xs)",
-              color: "var(--text-tertiary)",
-              letterSpacing: "0.02em",
-              marginTop: "var(--space-1)",
-            }}
-          >
-            {seriesTC}
-          </p>
-        )}
 
         {/* Date + Location — subtle metadata line */}
         {hasMeta && (

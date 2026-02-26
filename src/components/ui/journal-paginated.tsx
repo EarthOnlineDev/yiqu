@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState, useEffect, useCallback, useRef } from "react";
 
 interface ContentBlock {
@@ -10,33 +9,29 @@ interface ContentBlock {
 }
 
 interface JournalPaginatedProps {
-  readonly title: string;
   readonly blocks: readonly ContentBlock[];
-  readonly publishDate?: string;
-  readonly locationTC?: string;
+  readonly title: string;
 }
 
-export function JournalPaginated({ title, blocks, publishDate, locationTC }: JournalPaginatedProps) {
+export function JournalPaginated({ blocks, title }: JournalPaginatedProps) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [hoverSide, setHoverSide] = useState<"left" | "right" | null>(null);
+  const [loadedSet, setLoadedSet] = useState<ReadonlySet<number>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
 
   const total = blocks.length;
   const hasMultiple = total > 1;
-  const block = blocks[currentPage];
 
   const goTo = useCallback(
     (index: number) => {
-      if (isTransitioning || !hasMultiple) return;
+      if (!hasMultiple) return;
       const next = Math.max(0, Math.min(total - 1, index));
-      if (next === currentPage) return;
-      setIsTransitioning(true);
-      setCurrentPage(next);
-      setTimeout(() => setIsTransitioning(false), 300);
+      if (next !== currentPage) {
+        setCurrentPage(next);
+      }
     },
-    [isTransitioning, hasMultiple, total, currentPage]
+    [hasMultiple, total, currentPage]
   );
 
   const goPrev = useCallback(
@@ -48,7 +43,7 @@ export function JournalPaginated({ title, blocks, publishDate, locationTC }: Jou
     [goTo, currentPage]
   );
 
-  // Keyboard
+  // Keyboard navigation
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") goPrev();
@@ -58,7 +53,7 @@ export function JournalPaginated({ title, blocks, publishDate, locationTC }: Jou
     return () => window.removeEventListener("keydown", handleKey);
   }, [goPrev, goNext]);
 
-  // Touch
+  // Touch swipe
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
   };
@@ -71,7 +66,7 @@ export function JournalPaginated({ title, blocks, publishDate, locationTC }: Jou
     }
   };
 
-  // Click navigation
+  // Click navigation: left half → prev, right half → next
   const handleClick = (e: React.MouseEvent) => {
     if (!hasMultiple || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -80,6 +75,7 @@ export function JournalPaginated({ title, blocks, publishDate, locationTC }: Jou
     else goNext();
   };
 
+  // Track mouse position for cursor
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!hasMultiple || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -95,8 +91,15 @@ export function JournalPaginated({ title, blocks, publishDate, locationTC }: Jou
         ? "e-resize"
         : "default";
 
-  const hasImage = !!block.imageSrc;
-  const hasText = !!block.text;
+  // Track image load state
+  const handleImageLoad = useCallback((index: number) => {
+    setLoadedSet((prev) => {
+      if (prev.has(index)) return prev;
+      const next = new Set(prev);
+      next.add(index);
+      return next;
+    });
+  }, []);
 
   return (
     <div
@@ -108,144 +111,117 @@ export function JournalPaginated({ title, blocks, publishDate, locationTC }: Jou
       onTouchEnd={handleTouchEnd}
       style={{
         flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        cursor: cursorStyle,
-        minHeight: 0,
         position: "relative",
-        opacity: isTransitioning ? 0.6 : 1,
-        transition: "opacity 300ms ease",
+        cursor: cursorStyle,
+        overflow: "hidden",
+        minHeight: 0,
       }}
     >
-      {/* Title + metadata on first page */}
-      {currentPage === 0 && (
-        <div style={{ flexShrink: 0, marginBottom: "var(--space-6)" }}>
-          <h1
+      {/* TRUE CROSSFADE: All pages stacked, CSS opacity transitions */}
+      {blocks.map((block, index) => {
+        const hasImage = !!block.imageSrc;
+        const hasText = !!block.text;
+        const isActive = index === currentPage;
+        const imageLoaded = !hasImage || loadedSet.has(index);
+
+        return (
+          <div
+            key={`${block.text.slice(0, 30)}-${index}`}
             style={{
-              fontFamily: "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
-              fontSize: "var(--text-xl)",
-              fontWeight: 400,
-              color: "var(--text-primary)",
-              lineHeight: 1.6,
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              flexDirection: "column",
+              opacity: isActive && imageLoaded ? 1 : 0,
+              transition: "opacity 600ms ease",
+              pointerEvents: isActive ? "auto" : "none",
             }}
           >
-            {title}
-          </h1>
-          {(publishDate || locationTC) && (
-            <p
+            {/* Content area */}
+            <div
               style={{
-                fontFamily: "var(--font-cormorant), Georgia, serif",
-                fontSize: "var(--text-xs)",
-                color: "var(--text-tertiary)",
-                letterSpacing: "0.02em",
-                marginTop: "var(--space-2)",
+                flex: 1,
+                display: hasImage && hasText ? "grid" : "flex",
+                gridTemplateColumns: hasImage && hasText ? "1fr 1fr" : undefined,
+                gap: "var(--space-10)",
+                alignItems: "center",
+                overflow: "hidden",
+                minHeight: 0,
               }}
             >
-              {[publishDate, locationTC].filter(Boolean).join("  ·  ")}
-            </p>
-          )}
-        </div>
-      )}
+              {/* Text */}
+              {hasText && (
+                <div
+                  style={{
+                    fontFamily:
+                      "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
+                    fontSize: "var(--text-sm)",
+                    fontWeight: 400,
+                    color: "var(--text-secondary)",
+                    lineHeight: 2,
+                    whiteSpace: "pre-line",
+                    overflow: "auto",
+                    maxHeight: "100%",
+                    alignSelf: "center",
+                  }}
+                >
+                  {block.text}
+                </div>
+              )}
 
-      {/* Content area */}
-      <div
-        style={{
-          flex: 1,
-          display: hasImage && hasText ? "grid" : "flex",
-          gridTemplateColumns: hasImage && hasText ? "1fr 1fr" : undefined,
-          gap: "var(--space-10)",
-          alignItems: "center",
-          overflow: "hidden",
-          minHeight: 0,
-        }}
-      >
-        {/* Text */}
-        {hasText && (
-          <div
-            style={{
-              fontFamily:
-                "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
-              fontSize: "var(--text-sm)",
-              fontWeight: 400,
-              color: "var(--text-secondary)",
-              lineHeight: 2,
-              whiteSpace: "pre-line",
-              overflow: "hidden",
-              maxHeight: "100%",
-              alignSelf: "center",
-            }}
-          >
-            {block.text}
+              {/* Image */}
+              {hasImage && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%",
+                    overflow: "hidden",
+                    backgroundColor: "var(--bg-image)",
+                  }}
+                >
+                  <Image
+                    src={block.imageSrc!}
+                    alt={`${title} — ${index + 1}`}
+                    width={0}
+                    height={0}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    style={{
+                      width: "auto",
+                      height: "auto",
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                      objectFit: "contain",
+                      display: "block",
+                    }}
+                    priority={index === 0}
+                    loading={index === 0 ? undefined : "eager"}
+                    onLoad={() => handleImageLoad(index)}
+                  />
+                </div>
+              )}
+            </div>
           </div>
-        )}
-
-        {/* Image */}
-        {hasImage && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "100%",
-              overflow: "hidden",
-            }}
-          >
-            <Image
-              src={block.imageSrc!}
-              alt={title}
-              width={0}
-              height={0}
-              sizes="(max-width: 768px) 100vw, 50vw"
-              style={{
-                width: "auto",
-                height: "auto",
-                maxWidth: "100%",
-                maxHeight: "100%",
-                objectFit: "contain",
-                display: "block",
-              }}
-              priority
-            />
-          </div>
-        )}
-      </div>
+        );
+      })}
 
       {/* Counter */}
       {hasMultiple && (
-        <div
+        <span
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingTop: "var(--space-4)",
-            flexShrink: 0,
+            position: "absolute",
+            bottom: "var(--space-4)",
+            right: "var(--space-4)",
+            fontFamily: "var(--font-cormorant), Georgia, serif",
+            fontSize: "var(--text-xs)",
+            color: "var(--text-tertiary)",
+            letterSpacing: "0.1em",
+            userSelect: "none",
           }}
         >
-          <Link
-            href="/journal"
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              fontFamily: "var(--font-cormorant), Georgia, serif",
-              fontSize: "var(--text-xs)",
-              color: "var(--text-tertiary)",
-              textDecoration: "none",
-              letterSpacing: "0.05em",
-            }}
-          >
-            &larr; journal
-          </Link>
-          <span
-            style={{
-              fontFamily: "var(--font-cormorant), Georgia, serif",
-              fontSize: "var(--text-xs)",
-              color: "var(--text-tertiary)",
-              letterSpacing: "0.1em",
-            }}
-          >
-            {currentPage + 1} / {total}
-          </span>
-        </div>
+          {currentPage + 1} / {total}
+        </span>
       )}
     </div>
   );

@@ -17,7 +17,16 @@ export function SidebarLayout({
       <aside className="sidebar-aside">
         <SidebarNav currentPath={currentPath} asideExtra={asideExtra} />
       </aside>
-      <main>{children}</main>
+      <main
+        style={{
+          height: "100%",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {children}
+      </main>
     </div>
   );
 }

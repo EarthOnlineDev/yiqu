@@ -12,14 +12,19 @@ export default function JournalPage() {
 
   return (
     <SidebarLayout currentPath="/journal">
-      <div style={{ paddingTop: "var(--space-10)", maxWidth: 800 }}>
+      <div
+        style={{
+          paddingTop: "var(--space-10)",
+          overflow: "hidden",
+        }}
+      >
         <p
           style={{
             fontFamily: "var(--font-cormorant), Georgia, serif",
             fontSize: "var(--text-sm)",
             color: "var(--text-tertiary)",
             letterSpacing: "0.05em",
-            marginBottom: "var(--space-12)",
+            marginBottom: "var(--space-8)",
           }}
         >
           journal
@@ -30,10 +35,8 @@ export default function JournalPage() {
             key={work.id}
             href={`/journal/${work.id}`}
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "baseline",
-              padding: "var(--space-5) 0",
+              display: "block",
+              padding: "var(--space-3) 0",
               borderBottom:
                 i < works.length - 1
                   ? "1px solid var(--border)"
@@ -45,7 +48,7 @@ export default function JournalPage() {
               style={{
                 fontFamily:
                   "var(--font-noto-serif-tc), 'Noto Serif TC', serif",
-                fontSize: "var(--text-base)",
+                fontSize: "var(--text-sm)",
                 fontWeight: 400,
                 color: "var(--text-secondary)",
               }}

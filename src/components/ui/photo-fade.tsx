@@ -1,36 +1,21 @@
 "use client";
 
-import { useRef, useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 
 interface PhotoFadeProps {
   readonly children: ReactNode;
 }
 
 export function PhotoFade({ children }: PhotoFadeProps) {
-  const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
+    const timer = setTimeout(() => setVisible(true), 50);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
     <div
-      ref={ref}
       style={{
         opacity: visible ? 1 : 0,
         transition: "opacity var(--transition-slow)",

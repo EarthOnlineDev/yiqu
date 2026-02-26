@@ -55,15 +55,16 @@ export function SidebarNav({ currentPath, asideExtra }: SidebarNavProps) {
       style={{
         display: "flex",
         flexDirection: "column",
+        height: "100%",
         paddingTop: "var(--space-10)",
-        position: "sticky",
-        top: "var(--space-20)",
-        alignSelf: "start",
-        maxHeight: "calc(100vh - var(--space-20) * 2)",
+        overflow: "hidden",
       }}
     >
       {/* Name */}
-      <Link href="/" style={{ textDecoration: "none", marginBottom: "var(--space-12)" }}>
+      <Link
+        href="/"
+        style={{ textDecoration: "none", marginBottom: "var(--space-12)" }}
+      >
         <p
           style={{
             fontFamily:
@@ -109,10 +110,14 @@ export function SidebarNav({ currentPath, asideExtra }: SidebarNavProps) {
       </nav>
 
       {/* Optional extra content (e.g., work metadata on detail pages) */}
-      {asideExtra}
+      {asideExtra && (
+        <div style={{ flex: 1, overflow: "hidden", minHeight: 0 }}>
+          {asideExtra}
+        </div>
+      )}
 
       {/* Spacer */}
-      <div style={{ flex: 1 }} />
+      {!asideExtra && <div style={{ flex: 1 }} />}
 
       {/* Footer */}
       <p
@@ -121,6 +126,8 @@ export function SidebarNav({ currentPath, asideExtra }: SidebarNavProps) {
           fontSize: "var(--text-xs)",
           color: "var(--text-tertiary)",
           paddingBottom: "var(--space-10)",
+          paddingTop: "var(--space-4)",
+          flexShrink: 0,
         }}
       >
         &copy; 2025 YIQU

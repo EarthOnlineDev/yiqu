@@ -12,20 +12,12 @@ export default function HomePage() {
 
   return (
     <SidebarLayout currentPath="/">
-      <div
-        style={{
-          height: "calc(100vh - var(--space-20) * 2)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <WorkImage
-          src={heroImage.src}
-          alt={s2t(heroWork.title)}
-          priority
-        />
-      </div>
+      <WorkImage
+        src={heroImage.src}
+        alt={s2t(heroWork.title)}
+        contain
+        priority
+      />
     </SidebarLayout>
   );
 }

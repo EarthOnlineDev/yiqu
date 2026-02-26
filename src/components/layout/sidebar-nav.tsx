@@ -55,11 +55,11 @@ export function SidebarNav({ currentPath, asideExtra }: SidebarNavProps) {
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "100%",
         paddingTop: "var(--space-10)",
         position: "sticky",
         top: "var(--space-20)",
         alignSelf: "start",
+        maxHeight: "calc(100vh - var(--space-20) * 2)",
       }}
     >
       {/* Name */}

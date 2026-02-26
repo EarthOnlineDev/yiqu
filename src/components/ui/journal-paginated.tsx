@@ -144,7 +144,6 @@ export function JournalPaginated({ blocks, title }: JournalPaginatedProps) {
                 display: hasImage && hasText ? "grid" : "flex",
                 gridTemplateColumns: hasImage && hasText ? "1fr 1fr" : undefined,
                 gap: "var(--space-10)",
-                alignItems: "center",
                 overflow: "hidden",
                 minHeight: 0,
               }}
@@ -169,13 +168,12 @@ export function JournalPaginated({ blocks, title }: JournalPaginatedProps) {
                 </div>
               )}
 
-              {/* Image */}
+              {/* Image — fill mode so it scales up to use available space */}
               {hasImage && (
                 <div
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    position: "relative",
+                    width: "100%",
                     height: "100%",
                     overflow: "hidden",
                   }}
@@ -183,16 +181,11 @@ export function JournalPaginated({ blocks, title }: JournalPaginatedProps) {
                   <Image
                     src={block.imageSrc!}
                     alt={`${title} — ${index + 1}`}
-                    width={0}
-                    height={0}
+                    fill
                     sizes="(max-width: 768px) 100vw, 50vw"
                     style={{
-                      width: "auto",
-                      height: "auto",
-                      maxWidth: "100%",
-                      maxHeight: "100%",
                       objectFit: "contain",
-                      display: "block",
+                      objectPosition: "center",
                     }}
                     priority={index === 0}
                     loading={index === 0 ? undefined : "eager"}
